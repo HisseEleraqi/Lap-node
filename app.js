@@ -1,13 +1,23 @@
 const express = require("express");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
 var server = express();
 server.use(morgan("dev"));
 
 const port = process.env.PORT || 8080;
 
-server.listen(port, () => {
-  console.log(`Server is running on ${port}`);
-});
+mongoose
+  .connect("mongodb://localhost:27017/pd")
+  .then(() => {
+    console.log("Mongodb connected successfully");
+    server.listen(port, () => {
+      console.log(`Server is running on ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("err", err);
+  });
+
 ////Auth middel were
 
 server.use((req, res, next) => {
