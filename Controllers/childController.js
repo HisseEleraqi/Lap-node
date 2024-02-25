@@ -16,6 +16,7 @@ exports.getAllchildren = (req, res, next) => {
     });
 };
 exports.insertChildren = (req, res, next) => {
+  console.log('req :>> ', req);
   // Check if the file was uploaded
   if (!req.file) {
     return res.status(400).json({ message: "Image file is required" });
@@ -37,14 +38,9 @@ exports.insertChildren = (req, res, next) => {
   child
     .save()
     .then((child) => {
-      const token = jwt.sign(
-        { id: child._id, fullname: child.fullName, role: "child" },
-        process.env.SECRET_KEY,
-        { expiresIn: "1h" }
-      );
       res
         .status(201)
-        .json({ message: "Child added successfully", child, token });
+        .json({ message: "Child added successfully", child });
     })
     .catch(next);
 };
@@ -85,4 +81,15 @@ exports.deleteChildren = (req, res, next) => {
     .catch((error) => {
       next(error);
     });
+};
+
+exports.getChildById = (req, res, next) => {
+  Child.findById(req.params.id)
+    .then((child) => {
+      if (!child) {
+        return res.status(404).json({ message: "Child not found" });
+      }
+      res.status(200).json({ message: "Child found", child });
+    })
+    .catch(next);
 };

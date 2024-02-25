@@ -18,7 +18,7 @@ const Schema = new mongoose.Schema(
       ref: "Teacher",
     },
     children: {
-      type: [Number],
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "Child",
     },
   },
@@ -26,8 +26,7 @@ const Schema = new mongoose.Schema(
 );
 
 // auto increment
-Schema.plugin(AutoIncrement, { id: "classId", inc_field: "_id" });
-
+Schema.plugin(AutoIncrement, { inc_field: "_id" });
 // create a model
 const _class = mongoose.model("Class", Schema);
 

@@ -1,24 +1,22 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-  //get the token from the header
   try {
-    console.log(req.get("authorization"));
     let token = req.get("authorization").split(" ")[1];
-    let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    req.token = decodedToken;
+    let Token = jwt.verify(token, process.env.SECRET_KEY);
+    req.token = Token;
     next();
   } catch (error) {
-    error.message = "Not authenticated";
+    error.message = "User is not authenticated";
     error.statusCode = 401;
     next(error);
   }
 };
 
-// authentication middleware
+
 module.exports.isAdmin = (req, res, next) => {
   if (req.token.role !== "admin") {
-    let error = new Error("Not authorized");
+    let error = new Error("User is not authenticated");
     error.statusCode = 403;
     next(error);
   } else {
@@ -28,7 +26,7 @@ module.exports.isAdmin = (req, res, next) => {
 
 module.exports.isTeacher = (req, res, next) => {
   if (req.token.role !== "teacher") {
-    let error = new Error("Not authorized");
+    let error = new Error("User is not authenticated");
     error.statusCode = 403;
     next(error);
   } else {
