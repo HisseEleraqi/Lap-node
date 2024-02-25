@@ -15,19 +15,22 @@ exports.getAllchildren = (req, res, next) => {
       next(err);
     });
 };
-
 exports.insertChildren = (req, res, next) => {
+  // Check if the file was uploaded
+  if (!req.file) {
+    return res.status(400).json({ message: "Image file is required" });
+  }
+
   const imagePath = req.file.path;
-  const { _id, fullName, age, level, gender, city, street, building } =
-    req.body;
-  const address = { city: city, street: street, building: building };
+  const { fullName, age, level, gender, city, street, building } = req.body;
+  const address = { city, street, building };
+
   const child = new Child({
-    _id: _id,
-    fullName: fullName,
-    age: age,
-    level: level,
-    gender: gender,
-    address: address,
+    fullName,
+    age,
+    level,
+    gender,
+    address,
     image: imagePath,
   });
 
@@ -35,51 +38,33 @@ exports.insertChildren = (req, res, next) => {
     .save()
     .then((child) => {
       const token = jwt.sign(
-        {
-          id: child._id,
-          fullname: child.fullName,
-          role: "child",
-        },
+        { id: child._id, fullname: child.fullName, role: "child" },
         process.env.SECRET_KEY,
         { expiresIn: "1h" }
       );
-      res.status(201).json({
-        message: "Child added successfully",
-        child,
-        token,
-      });
+      res
+        .status(201)
+        .json({ message: "Child added successfully", child, token });
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch(next);
 };
 
 exports.updateChildren = (req, res, next) => {
-  Child.findByIdAndUpdate(req.body._id, req.body, { new: true })
-    .then((child) => {
-      // check if there is a new image
-      if (req.file) {
-        const imagePath = child.image;
-        // delete image from the server
-        fs.unlink(imagePath, (error) => {
-          if (error) {
-            next(error);
-          }
-        });
-        // update the image path
-        child.image = req.file.path;
+  const updateData = req.body;
 
-        // save the updated child
-        child.save();
+  if (req.file) {
+    updateData.image = req.file.path; // Update with new image path
+  }
+
+  Child.findByIdAndUpdate(req.body._id, updateData, { new: true })
+    .then((child) => {
+      if (!child) {
+        return res.status(404).json({ message: "Child not found" });
       }
-      res.status(200).json({
-        message: "Child updated successfully",
-        child,
-      });
+      // Optionally handle old image deletion here if a new image was uploaded
+      res.status(200).json({ message: "Child updated successfully", child });
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch(next);
 };
 
 exports.deleteChildren = (req, res, next) => {

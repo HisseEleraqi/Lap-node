@@ -4,11 +4,10 @@ const { bodyValidate } = require("../Validations/childValidation");
 const validator = require("../Validations/Vlidator");
 const router = express.Router();
 
-router;
 router
   .route("/child")
   .get(controller.getAllchildren)
-  .post(bodyValidate, validator, controller.insertChildren)
+  .post(controller.insertChildren)
   .put(bodyValidate, validator, controller.updateChildren)
   .delete(controller.deleteChildren);
 
