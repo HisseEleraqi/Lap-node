@@ -1,23 +1,44 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const addressSchema = new mongoose.Schema({
-  street: { type: String, required: true },
-  city: { type: String, required: true },
-  building: { type: String, required: true },
+  city: {
+    type: String,
+  },
+  street: {
+    type: String,
+  },
+  building: {
+    type: String,
+  },
 });
 
-const scheme = new mongoose.Schema({
-  _id: { type: Number, unique: true, require: true },
+const childSchema = new mongoose.Schema({
+  // Do not manually define _id here
+  fullName: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: Number,
+    required: true,
+  },
+  level: {
+    type: String,
+    required: true,
+    enum: ["PreKG", "KG1", "KG2"],
+  },
 
-  fullName: { type: String, required: true },
-
-  level: { type: String, enum: ["PreKG", "KG1", "KG2"], require: true },
-
-  gender: { type: String, enum: ["Male", "Female"], require: true },
-
-  age: { type: Number, require: true },
-
-  location: { type: addressSchema, require: true },
+  address: {
+    type: addressSchema,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
 });
 
-module.exports = mongoose.model("child", scheme);
+const Child = mongoose.model("Child", childSchema);
+
+module.exports = Child;

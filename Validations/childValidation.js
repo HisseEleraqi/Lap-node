@@ -31,3 +31,7 @@ exports.bodyValidate = [
   body("street").isString().withMessage("Street must be a string"),
   body("building").isString().withMessage("Building must be a string"),
 ];
+
+exports.paramValidate = [
+  param("id").isNumeric().withMessage("Id must be a number"),
+];

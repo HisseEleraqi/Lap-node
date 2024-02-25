@@ -1,8 +1,10 @@
 const express = require("express");
 const morgan = require("morgan");
+const upload = require("./Validations/MulterMW");
+
 const mongoose = require("mongoose");
-var server = express();
-server.use(morgan("dev"));
+const server = express();
+const childRoute = require("./Routes/childRoute");
 
 const port = process.env.PORT || 8080;
 
@@ -18,18 +20,13 @@ mongoose
     console.error("err", err);
   });
 
-////Auth middel were
-
-server.use((req, res, next) => {
-  console.log("Authorized", req.url, req.method);
-});
-
 ///settings
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
+server.use(morgan("dev"));
 
 //Routes
-
+server.use(childRoute);
 ///erorrs
 server.use((req, res, next) => {
   res.status(404).json({ message: "Not found" });
